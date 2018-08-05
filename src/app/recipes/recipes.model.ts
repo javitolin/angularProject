@@ -1,4 +1,4 @@
-import { Ingredient } from './../shared/ingredient.module';
+import { Ingredient } from '../shared/ingredient.module';
 export class Recipe {
   public name: string;
   public description: string;
