@@ -1,11 +1,13 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Recipe } from './recipes.model';
 import { Ingredient } from '../shared/ingredient.module';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
+import { Subject } from 'node_modules/rxjs';
 
 @Injectable()
 export class RecipeService {
-  recipeSelected = new EventEmitter<Recipe>();
+
+  recipesChange = new Subject<Recipe[]>();
   private recipes: Recipe[] = [
     new Recipe('test recipe', 'this is a test', 'http://cdn-image.myrecipes.com/sites/' +
     'default/files/styles/4_3_horizontal_-_1200x900/public/skillet-chicken-roasted-potat' +
@@ -23,6 +25,11 @@ export class RecipeService {
 
   }
 
+  public setRecipes(recipes: Recipe[]) {
+    this.recipes = recipes;
+    this.recipesChange.next(this.getRecipes());
+  }
+
   public getRecipes() {
     return this.recipes.slice(); // Get a copy
   }
@@ -33,5 +40,20 @@ export class RecipeService {
 
   public addIngredientsToShoppingList(ingredients: Ingredient[]) {
     this.shoppingListService.addIngredients(ingredients);
+  }
+
+  public addRecipe(recipe: Recipe) {
+    this.recipes.push(recipe);
+    this.recipesChange.next(this.getRecipes());
+  }
+
+  public updateRecipe(index: number, recipe: Recipe) {
+    this.recipes[index] = recipe;
+    this.recipesChange.next(this.getRecipes());
+  }
+
+  public deleteRecipe(index: number) {
+    this.recipes.splice(index, 1);
+    this.recipesChange.next(this.getRecipes());
   }
 }
